@@ -10,32 +10,104 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let emis = [];
 
-  // --- Event Listeners ---
+  // Validation functions
+  function validateInitialAmount() {
+    const value = Number(initialAmountEl.value);
+    const errorEl = document.getElementById("initialAmount-error");
+    if (!initialAmountEl.value || value <= 0) {
+      errorEl.textContent = "Please enter a valid amount greater than 0.";
+      initialAmountEl.setAttribute("aria-invalid", "true");
+      return false;
+    } else {
+      errorEl.textContent = "";
+      initialAmountEl.setAttribute("aria-invalid", "false");
+      return true;
+    }
+  }
 
-  addEmiBtn.addEventListener("click", () => {
+  function validateFirstDate() {
+    const value = firstDateEl.value;
+    const errorEl = document.getElementById("firstDate-error");
+    if (!value) {
+      errorEl.textContent = "Please select a valid date.";
+      firstDateEl.setAttribute("aria-invalid", "true");
+      return false;
+    } else {
+      errorEl.textContent = "";
+      firstDateEl.setAttribute("aria-invalid", "false");
+      return true;
+    }
+  }
+
+  function validateEmiInputs() {
     const amount = Number(emiAmountEl.value);
     const date = emiDateEl.value;
+    if (amount <= 0 || !date) {
+      showAlert("Please enter a valid date and amount.");
+      return false;
+    }
+    return true;
+  }
 
-    if (amount > 0 && date) {
+  function showAlert(message) {
+    // Create a temporary alert element
+    const alertEl = document.createElement("div");
+    alertEl.setAttribute("role", "alert");
+    alertEl.setAttribute("aria-live", "assertive");
+    alertEl.style.cssText = `
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #dc2626;
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      z-index: 1000;
+      max-width: 90vw;
+    `;
+    alertEl.textContent = message;
+    document.body.appendChild(alertEl);
+    setTimeout(() => {
+      document.body.removeChild(alertEl);
+    }, 3000);
+  }
+
+  // --- Event Listeners ---
+
+  initialAmountEl.addEventListener("blur", validateInitialAmount);
+  firstDateEl.addEventListener("blur", validateFirstDate);
+
+  addEmiBtn.addEventListener("click", () => {
+    if (validateEmiInputs()) {
+      const amount = Number(emiAmountEl.value);
+      const date = emiDateEl.value;
       emis.push({ date: new Date(date), amount: amount });
       renderEmiList();
       emiAmountEl.value = "";
       emiDateEl.value = "";
-    } else {
-      alert("Please enter a valid date and amount.");
+      outputEl.innerHTML = ""; // Clear results when EMI is added
+      outputEl.setAttribute("aria-live", "polite");
+      outputEl.textContent = "EMI added successfully.";
+      setTimeout(() => {
+        outputEl.textContent = "";
+      }, 1000);
     }
   });
 
   calculateBtn.addEventListener("click", () => {
-    const initialAmount = Number(initialAmountEl.value);
-    const firstDate = firstDateEl.value;
+    const isAmountValid = validateInitialAmount();
+    const isDateValid = validateFirstDate();
 
-    if (initialAmount > 0 && firstDate) {
+    if (isAmountValid && isDateValid) {
+      const initialAmount = Number(initialAmountEl.value);
+      const firstDate = firstDateEl.value;
       const calculator = new CalculateInterest(initialAmount, firstDate, emis);
       const schedule = calculator.getInterestSchedule();
       printSchedule(schedule, calculator.finalBalance);
+      outputEl.setAttribute("aria-live", "polite");
     } else {
-      alert("Please enter a valid initial amount and start date.");
+      showAlert("Please correct the errors above.");
     }
   });
 
@@ -43,12 +115,38 @@ document.addEventListener("DOMContentLoaded", () => {
     emiListEl.innerHTML = "";
     emis
       .sort((a, b) => a.date - b.date)
-      .forEach((emi) => {
+      .forEach((emi, index) => {
         const emiDiv = document.createElement("div");
         emiDiv.className = "emi-entry";
-        emiDiv.textContent = `${
+        emiDiv.setAttribute("role", "listitem");
+
+        const emiText = document.createElement("span");
+        emiText.textContent = `${
           emi.date.toISOString().split("T")[0]
         } - ₹${emi.amount.toFixed(2)}`;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.setAttribute(
+          "aria-label",
+          `Remove EMI of ₹${emi.amount.toFixed(2)} on ${
+            emi.date.toISOString().split("T")[0]
+          }`
+        );
+        removeBtn.addEventListener("click", () => {
+          emis.splice(index, 1);
+          renderEmiList();
+          outputEl.innerHTML = ""; // Clear results when EMI is removed
+          outputEl.setAttribute("aria-live", "polite");
+          outputEl.textContent = "EMI removed successfully.";
+          setTimeout(() => {
+            outputEl.textContent = "";
+          }, 1000);
+        });
+
+        emiDiv.appendChild(emiText);
+        emiDiv.appendChild(removeBtn);
         emiListEl.appendChild(emiDiv);
       });
   }
@@ -79,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (schedule.length === 0) {
       outputEl.innerHTML =
-        '<div class="card metric"><div class="metric-label">No completed 28-day periods yet</div><div class="metric-value muted">Select an earlier First Date or add EMIs.</div></div>';
+        '<div class="empty-state">No completed 28-day periods yet. Select an earlier First Date or add EMIs.</div>';
       return;
     }
 
@@ -87,42 +185,90 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Summary metrics
     html += '<div class="summary-cards">';
-    html += `<div class="card metric"><div class="metric-label">Total Paid</div><div class="metric-value">${toINR(
+    html += `<div class="metric-card"><div class="metric-label">Total Paid</div><div class="metric-value">${toINR(
       totals.paid
     )}</div></div>`;
-    html += `<div class="card metric"><div class="metric-label">Total Interest</div><div class="metric-value">${toINR(
+    html += `<div class="metric-card"><div class="metric-label">Total Interest</div><div class="metric-value">${toINR(
       totals.interest
     )}</div></div>`;
-    html += `<div class="card metric"><div class="metric-label">Final Balance</div><div class="metric-value">${toINR(
+    html += `<div class="metric-card"><div class="metric-label">Final Balance</div><div class="metric-value">${toINR(
       finalBalance
     )}</div></div>`;
     html += "</div>";
 
-    // Per-period cards
-    schedule.forEach((period) => {
-      html += `
-        <div class="result-card">
-          <div class="result-header">
+    // Check viewport width for responsive rendering
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      // Stacked cards for mobile
+      schedule.forEach((period) => {
+        html += `
+          <div class="result-card">
             <div class="result-range">${fmt(period.startDate)} → ${fmt(
-        period.endDate
-      )}</div>
-            <div class="result-chips">
-              <span class="chip paid"><span class="dot"></span> Paid: ${toINR(
-                period.totalPaid
-              )}</span>
-              <span class="chip interest"><span class="dot"></span> Interest: ${toINR(
-                period.interest
-              )}</span>
-              <span class="chip balance"><span class="dot"></span> Balance: ${toINR(
-                period.balance
-              )}</span>
+          period.endDate
+        )}</div>
+            <div class="result-details">
+              <div>Paid: ${toINR(period.totalPaid)}</div>
+              <div>Interest: ${toINR(period.interest)}</div>
+              <div>Balance: ${toINR(period.balance)}</div>
             </div>
           </div>
-        </div>
+        `;
+      });
+    } else {
+      // Table for desktop
+      html += `
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Paid</th>
+              <th>Interest</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
       `;
-    });
+      schedule.forEach((period) => {
+        html += `
+          <tr>
+            <td>${fmt(period.startDate)} → ${fmt(period.endDate)}</td>
+            <td>${toINR(period.totalPaid)}</td>
+            <td>${toINR(period.interest)}</td>
+            <td>${toINR(period.balance)}</td>
+          </tr>
+        `;
+      });
+      html += `
+          </tbody>
+        </table>
+      `;
+    }
 
     outputEl.innerHTML = html;
+
+    // Announce results update
+    outputEl.setAttribute("aria-live", "polite");
+    const announcement = `Results updated. Total paid: ${toINR(
+      totals.paid
+    )}, Total interest: ${toINR(totals.interest)}, Final balance: ${toINR(
+      finalBalance
+    )}. ${schedule.length} periods calculated.`;
+    setTimeout(() => {
+      const tempEl = document.createElement("div");
+      tempEl.setAttribute("aria-live", "assertive");
+      tempEl.setAttribute("aria-atomic", "true");
+      tempEl.style.position = "absolute";
+      tempEl.style.left = "-10000px";
+      tempEl.style.width = "1px";
+      tempEl.style.height = "1px";
+      tempEl.style.overflow = "hidden";
+      tempEl.textContent = announcement;
+      document.body.appendChild(tempEl);
+      setTimeout(() => {
+        document.body.removeChild(tempEl);
+      }, 1000);
+    }, 100);
   }
 });
 

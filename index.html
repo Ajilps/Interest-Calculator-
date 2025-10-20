@@ -9,35 +9,48 @@
 </head>
 
 <body>
-  <div class="container">
+  <header class="container">
     <h1>Interest Calculator</h1>
     <p class="subtitle">Fast 28-day interest tracker with EMIs</p>
-    <div class="input-section card">
-      <label for="initialAmount">Initial Amount (₹):</label>
-      <input type="number" id="initialAmount" value="10000" inputmode="decimal" min="0" placeholder="Enter amount">
-      <label for="firstDate">First Date:</label>
-      <input type="date" id="firstDate" value="2025-07-28">
-    </div>
+  </header>
 
-    <div class="emi-section card">
+  <main class="container">
+    <section class="input-section card">
+      <h2>Initial Setup</h2>
+      <div class="form-group">
+        <label for="initialAmount">Initial Amount (₹):</label>
+        <input type="number" id="initialAmount" value="10000" inputmode="decimal" min="0" placeholder="Enter amount"
+          aria-describedby="initialAmount-error" style="color: black;">
+        <div id="initialAmount-error" class="error-message" role="alert" aria-live="polite"></div>
+      </div>
+      <div class="form-group">
+        <label for="firstDate">First Date:</label>
+        <input type="date" id="firstDate" value="2025-07-28" aria-describedby="firstDate-error" style="color: black;">
+        <div id="firstDate-error" class="error-message" role="alert" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="emi-section card">
       <h2>EMI Transactions</h2>
-      <div id="emi-list">
+      <div id="emi-list" role="list" aria-label="List of EMI transactions">
         <!-- EMI entries will be dynamically added here -->
       </div>
       <div class="add-emi">
-        <input type="date" id="emiDate">
-        <input type="number" id="emiAmount" placeholder="Amount (₹)">
+        <input type="date" id="emiDate" aria-label="EMI date" style="color: black;">
+        <input type="number" id="emiAmount" placeholder="Amount (₹)" inputmode="decimal" min="0" aria-label="EMI amount"
+          style="color: black;">
         <button id="addEmiBtn">Add EMI</button>
       </div>
-    </div>
+    </section>
 
     <button id="calculateBtn">Calculate Interest</button>
 
-    <div class="output-section card">
+    <section class="output-section card">
       <h2>Results</h2>
-      <div id="output" class="results-grid" aria-live="polite"></div>
-    </div>
-  </div>
+      <div id="output" class="results-grid" aria-live="polite" role="region" aria-label="Calculation results"></div>
+    </section>
+  </main>
+
   <script src="script.js"></script>
 </body>
 
