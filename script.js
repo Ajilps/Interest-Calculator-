@@ -296,6 +296,9 @@ class CalculateInterest {
       // Move date +28 days
       date.setDate(date.getDate() + 28);
 
+      // Calculate interest BEFORE deducting payments (on opening balance)
+      const interest = this.interestFor28Days(principal);
+
       // Find EMIs paid within this 28-day window
       const payments = this.emis.filter(
         (emi) => emi.date >= prevDate && emi.date < date
@@ -307,15 +310,9 @@ class CalculateInterest {
       // Deduct EMI payments from principal
       principal -= totalPaid;
 
-      // Calculate interest for this period
-      const interest = this.interestFor28Days(principal);
-
-      // Add interest to principal (if it’s compounding)
-      // principal += interest;
-
       schedule.push({
-        startDate: prevDate,
-        endDate: date,
+        startDate: new Date(prevDate),
+        endDate: new Date(date),
         totalPaid: totalPaid,
         interest: interest,
         balance: principal,
