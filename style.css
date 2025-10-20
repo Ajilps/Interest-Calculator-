@@ -1,0 +1,552 @@
+body {
+  font-family: sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+h1,
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+.input-section,
+.emi-section,
+.add-emi {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.input-section label {
+  flex-shrink: 0;
+}
+
+input[type="number"],
+input[type="date"] {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+#emi-list {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.emi-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+button {
+  padding: 0.6rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#calculateBtn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  font-size: 1.2rem;
+}
+
+.output-section {
+  margin-top: 1.5rem;
+}
+
+#output {
+  background-color: #e9ecef;
+  padding: 1rem;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* ===== UI Enhancements: Mobile + Desktop, Stylish Results ===== */
+
+/* Design tokens */
+:root {
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #2563eb;
+  --primary-600: #1d4ed8;
+  --ring: rgba(37, 99, 235, 0.25);
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+}
+
+/* Subtle background polish */
+body {
+  background-image: radial-gradient(
+      1200px 400px at 10% -20%,
+      rgba(37, 99, 235, 0.06),
+      transparent
+    ),
+    radial-gradient(
+      1200px 400px at 90% 120%,
+      rgba(37, 99, 235, 0.06),
+      transparent
+    );
+}
+
+/* Container polish for desktop */
+.container {
+  max-width: 840px;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06),
+    0 10px 30px -12px rgba(37, 99, 235, 0.18);
+}
+
+/* Heading and subtitle */
+h1 {
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.2px;
+}
+.subtitle {
+  margin: 0 0 1rem 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Card wrapper for grouped sections */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 14px rgba(2, 6, 23, 0.04);
+}
+
+/* Inputs: switch to grid for label-input alignment */
+.input-section {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+.input-section label {
+  color: var(--text);
+  font-weight: 600;
+}
+input[type="number"],
+input[type="date"] {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    transform 0.04s ease;
+}
+input[type="number"]:focus,
+input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+/* EMI section + add bar */
+.emi-section h2 {
+  margin-top: 0.25rem;
+}
+.add-emi {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+.add-emi input[type="date"],
+.add-emi input[type="number"] {
+  flex: 1 1 180px;
+}
+
+/* EMI list styling */
+#emi-list {
+  width: 100%;
+  margin: 0.5rem 0 1rem;
+}
+.emi-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: linear-gradient(180deg, #f9fafb, #f3f4f6);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 10px;
+  color: #111827;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Buttons */
+button {
+  padding: 0.6rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.04s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 8px 18px -10px rgba(37, 99, 235, 0.7);
+}
+button:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 22px -10px rgba(37, 99, 235, 0.8);
+}
+button:active {
+  transform: translateY(0.5px);
+}
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+#calculateBtn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  font-size: 1.1rem;
+}
+
+/* Output section heading */
+.output-section {
+  margin-top: 1.25rem;
+}
+.output-section h2 {
+  position: relative;
+  margin: 0 0 0.5rem 0;
+}
+.output-section h2::after {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 56px;
+  margin: 8px auto 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), rgba(37, 99, 235, 0.4));
+}
+
+/* Results layout */
+.results-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* Summary metrics */
+.summary-cards {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.card.metric {
+  padding: 0.85rem 0.9rem;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #f9fafb);
+  border: 1px solid var(--border);
+}
+.metric-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.metric-value {
+  margin-top: 2px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* Per-period result cards */
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem;
+  box-shadow: 0 1px 10px rgba(2, 6, 23, 0.05);
+  transition: transform 0.06s ease, box-shadow 0.2s ease;
+}
+.result-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 26px -12px rgba(2, 6, 23, 0.16);
+}
+.result-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+.result-range {
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.2px;
+}
+.result-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.28rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.2px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+}
+.chip .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.chip.paid .dot {
+  background: var(--success);
+}
+.chip.interest .dot {
+  background: var(--warning);
+}
+.chip.balance .dot {
+  background: var(--primary);
+}
+.chip.muted {
+  background: #f3f4f6;
+  color: #111827;
+  border-color: #e5e7eb;
+}
+
+/* A tiny muted paragraph style if needed */
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Mobile-first responsiveness */
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  .input-section {
+    grid-template-columns: 1fr;
+  }
+  .add-emi {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #calculateBtn {
+    position: sticky;
+    bottom: 8px;
+  }
+}
+
+/* Optional dark mode refinement */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #0b1020;
+    --surface-2: #0f172a;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --border: #1f2a44;
+  }
+  body {
+    background-color: #0a0f1d;
+    background-image: radial-gradient(
+        1100px 360px at 10% -20%,
+        rgba(37, 99, 235, 0.18),
+        transparent
+      ),
+      radial-gradient(
+        1100px 360px at 90% 120%,
+        rgba(37, 99, 235, 0.18),
+        transparent
+      );
+  }
+  .emi-entry {
+    background: linear-gradient(180deg, #0f172a, #0b1325);
+    color: #e5e7eb;
+    border-left-color: var(--primary);
+  }
+  .card.metric {
+    background: linear-gradient(180deg, #0b1020, #111a31);
+  }
+  .chip {
+    background: #0f172a;
+    border-color: #1f2a44;
+    color: #e5e7eb;
+  }
+  .chip.muted {
+    background: #0b1020;
+    color: #cbd5e1;
+    border-color: #1f2a44;
+  }
+  .result-card {
+    background: #0b1020;
+    border-color: #1f2a44;
+  }
+  .result-range {
+    color: #e5e7eb;
+  }
+}
+
+/* ===== Overrides to ensure the new styles take precedence over older rules ===== */
+.container {
+  max-width: 840px;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06),
+    0 10px 30px -12px rgba(37, 99, 235, 0.18);
+}
+
+/* Input grid over old flex layout */
+.input-section {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+.input-section label {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Inputs */
+input[type="number"],
+input[type="date"] {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    transform 0.04s ease;
+}
+input[type="number"]:focus,
+input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+/* EMI entry card look */
+.emi-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: linear-gradient(180deg, #f9fafb, #f3f4f6);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 10px;
+  color: #111827;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Buttons: gradient + elevation */
+button {
+  padding: 0.6rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.04s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 8px 18px -10px rgba(37, 99, 235, 0.7);
+}
+button:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 10px 22px -10px rgba(37, 99, 235, 0.8);
+}
+button:active {
+  transform: translateY(0.5px);
+}
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+/* Calculate button sizing */
+#calculateBtn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  font-size: 1.1rem;
+}
+
+/* Results container should be transparent now that we render cards */
+#output {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  white-space: normal;
+}
+
+/* Mobile refinement to ensure single-column inputs */
+@media (max-width: 640px) {
+  .input-section {
+    grid-template-columns: 1fr;
+  }
+  .add-emi {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #calculateBtn {
+    position: sticky;
+    bottom: 8px;
+  }
+}
