@@ -856,53 +856,282 @@ button:focus-visible {
   padding: 0;
   border-radius: 0;
   white-space: normal;
+}
 
-  /* Date input group styling */
+/* Date input group styling */
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.date-part {
+  flex: 1;
+  min-width: 50px;
+  max-width: 70px;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.date-part:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+  transform: translateY(-1px);
+}
+
+.date-part-year {
+  max-width: 95px;
+}
+
+.date-separator {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+  user-select: none;
+}
+
+/* Mobile date input adjustments */
+@media (max-width: 640px) {
   .date-input-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
+    gap: 0.4rem;
   }
 
   .date-part {
-    flex: 1;
-    min-width: 50px;
-    max-width: 70px;
-    padding: 0.65rem 0.5rem;
-    text-align: center;
+    /* Enhanced Header Styling */
+    .app-header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      padding: 2rem 1rem;
+      margin: -1rem -1rem 2rem -1rem;
+      border-radius: 0 0 24px 24px;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+      text-align: center;
+    }
+
+    .header-content h1 {
+      color: white;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      margin: 0;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-content .subtitle {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      margin: 0.5rem 0 0 0;
+    }
+
+    /* Enhanced Button Styles */
+    .calculate-btn {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .calculate-btn:hover {
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+      padding: 0.7rem 1.2rem;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .download-btn:hover {
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-icon {
+      font-size: 1.2em;
+      line-height: 1;
+    }
+
+    /* Enhanced Form Styling */
+    .form-group label {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    input[type="number"] {
+      font-size: 1.1rem;
+      padding: 0.8rem 1rem;
+    }
+
+    /* Enhanced EMI Section */
+    .emi-section h2 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .emi-section h2::before {
+      content: "💳";
+      font-size: 1.3em;
+    }
+
+    #addEmiBtn {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      white-space: nowrap;
+    }
+
+    /* Enhanced Result Cards */
+    .metric-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+      border: 2px solid var(--border);
+      padding: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+      border-color: var(--primary);
+    }
+
+    .metric-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 1.6rem;
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Loading Animation */
+    @keyframes shimmer {
+      0% {
+        background-position: -1000px 0;
+      }
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+
+    .loading {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 1000px 100%;
+      animation: shimmer 2s infinite;
+    }
+
+    /* Improved Mobile Experience */
+    @media (max-width: 640px) {
+      .app-header {
+        padding: 1.5rem 0.75rem;
+        margin: -0.5rem -0.5rem 1.5rem -0.5rem;
+        border-radius: 0 0 20px 20px;
+      }
+
+      .header-content h1 {
+        font-size: 1.8rem;
+      }
+
+      .calculate-btn {
+        font-size: 1.1rem;
+        padding: 0.9rem 1.5rem;
+        position: sticky;
+        bottom: 1rem;
+        z-index: 100;
+        box-shadow: 0 -4px 20px rgba(16, 185, 129, 0.3);
+      }
+
+      .download-btn {
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.5rem;
+      }
+
+      .metric-card {
+        padding: 1rem;
+      }
+
+      .metric-value {
+        font-size: 1.4rem;
+      }
+
+      .form-group label {
+        font-size: 0.95rem;
+      }
+    }
+
+    /* Accessibility Improvements */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Focus Visible for Keyboard Navigation */
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Dark Mode Enhancements */
+    @media (prefers-color-scheme: dark) {
+      .app-header {
+        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+      }
+
+      .date-part {
+        background: var(--surface);
+        border-color: var(--border);
+        color: var(--text);
+      }
+
+      .metric-card {
+        background: linear-gradient(135deg, #0b1020 0%, #111a31 100%);
+        border-color: var(--border);
+      }
+
+      input[type="number"] {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--border);
+      }
+    }
+    min-width: 45px;
+    max-width: 65px;
+    padding: 0.7rem 0.4rem;
     font-size: 1rem;
-    font-weight: 600;
+    min-height: 48px;
   }
 
   .date-part-year {
-    max-width: 90px;
+    max-width: 80px;
   }
 
   .date-separator {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--muted);
+    font-size: 1.1rem;
   }
 
-  @media (max-width: 640px) {
-    .date-input-group {
-      gap: 0.25rem;
-    }
-
-    .date-part {
-      min-width: 40px;
-      max-width: 60px;
-      padding: 0.5rem 0.3rem;
-      font-size: 0.9rem;
-    }
-
-    .date-part-year {
-      max-width: 75px;
-    }
-
-    .date-separator {
-      font-size: 1rem;
-    }
+  .add-emi .date-input-group {
+    width: 100%;
   }
 }

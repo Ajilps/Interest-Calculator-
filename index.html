@@ -9,9 +9,11 @@
 </head>
 
 <body>
-  <header class="container">
-    <h1>Interest Calculator v2</h1>
-    <p class="subtitle">Fast 28-day interest tracker with EMIs</p>
+  <header class="app-header">
+    <div class="header-content">
+      <h1>💰 Interest Calculator</h1>
+      <p class="subtitle">Track your 28-day interest cycles with ease</p>
+    </div>
   </header>
 
   <main class="container">
@@ -61,13 +63,17 @@
       </div>
     </section>
 
-    <button id="calculateBtn">Calculate Interest</button>
+    <button id="calculateBtn" class="calculate-btn">
+      <span class="btn-icon">📊</span>
+      <span>Calculate Interest</span>
+    </button>
 
     <section class="output-section card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h2 style="margin: 0;">Results</h2>
-        <button id="downloadPdfBtn" style="display: none; padding: 0.6rem 1rem; margin: 0; font-size: 0.9rem;">
-          📄 Download PDF
+        <button id="downloadPdfBtn" class="download-btn" style="display: none;">
+          <span class="btn-icon">📄</span>
+          <span>Download PDF</span>
         </button>
       </div>
       <div id="output" class="results-grid" aria-live="polite" role="region" aria-label="Calculation results"></div>
