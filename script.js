@@ -1,7 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const initialAmountEl = document.getElementById("initialAmount");
-  const firstDateEl = document.getElementById("firstDate");
-  const emiDateEl = document.getElementById("emiDate");
+  const firstDateDayEl = document.getElementById("firstDate-day");
+  const firstDateMonthEl = document.getElementById("firstDate-month");
+  const firstDateYearEl = document.getElementById("firstDate-year");
+  const emiDateDayEl = document.getElementById("emiDate-day");
+  const emiDateMonthEl = document.getElementById("emiDate-month");
+  const emiDateYearEl = document.getElementById("emiDate-year");
   const emiAmountEl = document.getElementById("emiAmount");
   const addEmiBtn = document.getElementById("addEmiBtn");
   const calculateBtn = document.getElementById("calculateBtn");
@@ -9,6 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const emiListEl = document.getElementById("emi-list");
 
   let emis = [];
+
+  // Initialize with default date
+  firstDateDayEl.value = "28";
+  firstDateMonthEl.value = "07";
+  firstDateYearEl.value = "2025";
 
   // Validation functions
   function validateInitialAmount() {
@@ -25,25 +34,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Helper function to validate and format date input
-  function validateDateFormat(dateString) {
-    // Check if it matches YYYY-MM-DD format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(dateString)) {
-      return {
-        valid: false,
-        message: "Please use YYYY-MM-DD format (e.g., 2025-01-15)",
-      };
+  // Helper function to get date from split fields
+  function getDateFromFields(dayEl, monthEl, yearEl) {
+    const day = dayEl.value.trim().padStart(2, "0");
+    const month = monthEl.value.trim().padStart(2, "0");
+    const year = yearEl.value.trim();
+    return { day, month, year };
+  }
+
+  // Helper function to validate split date fields
+  function validateSplitDate(dayEl, monthEl, yearEl) {
+    const day = parseInt(dayEl.value);
+    const month = parseInt(monthEl.value);
+    const year = parseInt(yearEl.value);
+
+    if (!dayEl.value || !monthEl.value || !yearEl.value) {
+      return { valid: false, message: "Please fill in all date fields" };
     }
 
-    // Check if it's a valid date
-    const date = new Date(dateString);
+    if (isNaN(day) || day < 1 || day > 31) {
+      return { valid: false, message: "Day must be between 1 and 31" };
+    }
+
+    if (isNaN(month) || month < 1 || month > 12) {
+      return { valid: false, message: "Month must be between 1 and 12" };
+    }
+
+    if (isNaN(year) || year < 1900 || year > 2100) {
+      return { valid: false, message: "Please enter a valid year" };
+    }
+
+    // Create ISO date string and validate
+    const isoDate = `${year}-${String(month).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
+    const date = new Date(isoDate);
+
     if (isNaN(date.getTime())) {
-      return { valid: false, message: "Please enter a valid date" };
+      return { valid: false, message: "Invalid date" };
     }
 
-    // Check if the date components match (handles invalid dates like 2025-02-30)
-    const [year, month, day] = dateString.split("-").map(Number);
+    // Check if date components match (handles invalid dates like 30-02-2025)
     if (
       date.getFullYear() !== year ||
       date.getMonth() + 1 !== month ||
@@ -51,44 +82,63 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
       return {
         valid: false,
-        message: "Invalid date (e.g., Feb 30 doesn't exist)",
+        message: "Invalid date (e.g., 30 Feb doesn't exist)",
       };
     }
 
-    return { valid: true, date: date };
+    return { valid: true, date: date, isoDate: isoDate };
   }
 
-  function validateFirstDate() {
-    const value = firstDateEl.value;
-    const errorEl = document.getElementById("firstDate-error");
-    if (!value) {
-      errorEl.textContent = "Please enter or select a date.";
-      firstDateEl.setAttribute("aria-invalid", "true");
-      return false;
-    }
+  // Auto-focus to next field when current is filled
+  function setupAutoFocus(dayEl, monthEl, yearEl) {
+    dayEl.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "");
+      if (e.target.value.length === 2) {
+        monthEl.focus();
+      }
+    });
 
-    const validation = validateDateFormat(value);
+    monthEl.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "");
+      if (e.target.value.length === 2) {
+        yearEl.focus();
+      }
+    });
+
+    yearEl.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "");
+    });
+  }
+
+  // Setup auto-focus for both date field sets
+  setupAutoFocus(firstDateDayEl, firstDateMonthEl, firstDateYearEl);
+  setupAutoFocus(emiDateDayEl, emiDateMonthEl, emiDateYearEl);
+
+  function validateFirstDate() {
+    const errorEl = document.getElementById("firstDate-error");
+    const validation = validateSplitDate(
+      firstDateDayEl,
+      firstDateMonthEl,
+      firstDateYearEl
+    );
+
     if (!validation.valid) {
       errorEl.textContent = validation.message;
-      firstDateEl.setAttribute("aria-invalid", "true");
       return false;
     }
 
     errorEl.textContent = "";
-    firstDateEl.setAttribute("aria-invalid", "false");
     return true;
   }
 
   function validateEmiInputs() {
     const amount = Number(emiAmountEl.value);
-    const date = emiDateEl.value;
+    const validation = validateSplitDate(
+      emiDateDayEl,
+      emiDateMonthEl,
+      emiDateYearEl
+    );
 
-    if (!date) {
-      showAlert("Please enter or select an EMI date.");
-      return false;
-    }
-
-    const validation = validateDateFormat(date);
     if (!validation.valid) {
       showAlert("EMI Date: " + validation.message);
       return false;
@@ -129,16 +179,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Event Listeners ---
 
   initialAmountEl.addEventListener("blur", validateInitialAmount);
-  firstDateEl.addEventListener("blur", validateFirstDate);
+  firstDateYearEl.addEventListener("blur", validateFirstDate);
 
   addEmiBtn.addEventListener("click", () => {
     if (validateEmiInputs()) {
       const amount = Number(emiAmountEl.value);
-      const date = emiDateEl.value;
-      emis.push({ date: new Date(date), amount: amount });
+      const validation = validateSplitDate(
+        emiDateDayEl,
+        emiDateMonthEl,
+        emiDateYearEl
+      );
+      emis.push({ date: new Date(validation.isoDate), amount: amount });
       renderEmiList();
       emiAmountEl.value = "";
-      emiDateEl.value = "";
+      emiDateDayEl.value = "";
+      emiDateMonthEl.value = "";
+      emiDateYearEl.value = "";
       outputEl.innerHTML = ""; // Clear results when EMI is added
       outputEl.setAttribute("aria-live", "polite");
       outputEl.textContent = "EMI added successfully.";
@@ -154,7 +210,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isAmountValid && isDateValid) {
       const initialAmount = Number(initialAmountEl.value);
-      const firstDate = firstDateEl.value;
+      const validation = validateSplitDate(
+        firstDateDayEl,
+        firstDateMonthEl,
+        firstDateYearEl
+      );
+      const firstDate = validation.isoDate;
       const calculator = new CalculateInterest(initialAmount, firstDate, emis);
       const schedule = calculator.getInterestSchedule();
       printSchedule(schedule, calculator.finalBalance);
@@ -183,18 +244,20 @@ document.addEventListener("DOMContentLoaded", () => {
         emiDiv.setAttribute("role", "listitem");
 
         const emiText = document.createElement("span");
-        emiText.textContent = `${
-          emi.date.toISOString().split("T")[0]
-        } - ₹${emi.amount.toFixed(2)}`;
+        const isoDate = emi.date.toISOString().split("T")[0];
+        const [year, month, day] = isoDate.split("-");
+        const displayDate = `${day}/${month}/${year}`;
+        emiText.textContent = `${displayDate} - ₹${emi.amount.toFixed(2)}`;
 
         const removeBtn = document.createElement("button");
         removeBtn.className = "remove-btn";
         removeBtn.textContent = "Remove";
+        const isoDateForLabel = emi.date.toISOString().split("T")[0];
+        const [yearL, monthL, dayL] = isoDateForLabel.split("-");
+        const displayDateForLabel = `${dayL}/${monthL}/${yearL}`;
         removeBtn.setAttribute(
           "aria-label",
-          `Remove EMI of ₹${emi.amount.toFixed(2)} on ${
-            emi.date.toISOString().split("T")[0]
-          }`
+          `Remove EMI of ₹${emi.amount.toFixed(2)} on ${displayDateForLabel}`
         );
         removeBtn.addEventListener("click", () => {
           emis.splice(index, 1);
@@ -217,11 +280,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const downloadBtn = document.getElementById("downloadPdfBtn");
 
     // Store data globally for PDF generation
+    const validation = validateSplitDate(
+      firstDateDayEl,
+      firstDateMonthEl,
+      firstDateYearEl
+    );
     window.calculationData = {
       schedule,
       finalBalance,
       initialAmount: Number(initialAmountEl.value),
-      firstDate: firstDateEl.value,
+      firstDate: validation.isoDate,
       emis: emis,
     };
 

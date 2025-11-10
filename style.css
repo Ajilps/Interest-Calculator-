@@ -856,4 +856,53 @@ button:focus-visible {
   padding: 0;
   border-radius: 0;
   white-space: normal;
+
+  /* Date input group styling */
+  .date-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .date-part {
+    flex: 1;
+    min-width: 50px;
+    max-width: 70px;
+    padding: 0.65rem 0.5rem;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .date-part-year {
+    max-width: 90px;
+  }
+
+  .date-separator {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px) {
+    .date-input-group {
+      gap: 0.25rem;
+    }
+
+    .date-part {
+      min-width: 40px;
+      max-width: 60px;
+      padding: 0.5rem 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .date-part-year {
+      max-width: 75px;
+    }
+
+    .date-separator {
+      font-size: 1rem;
+    }
+  }
 }

@@ -10,7 +10,7 @@
 
 <body>
   <header class="container">
-    <h1>Interest Calculator</h1>
+    <h1>Interest Calculator v2</h1>
     <p class="subtitle">Fast 28-day interest tracker with EMIs</p>
   </header>
 
@@ -24,9 +24,17 @@
         <div id="initialAmount-error" class="error-message" role="alert" aria-live="polite"></div>
       </div>
       <div class="form-group">
-        <label for="firstDate">First Date (YYYY-MM-DD):</label>
-        <input type="date" id="firstDate" value="2025-07-28" aria-describedby="firstDate-error" style="color: black;"
-          placeholder="YYYY-MM-DD">
+        <label for="firstDate">First Date:</label>
+        <div class="date-input-group">
+          <input type="text" id="firstDate-day" maxlength="2" placeholder="DD" inputmode="numeric" class="date-part"
+            style="color: black;" aria-label="Day">
+          <span class="date-separator">/</span>
+          <input type="text" id="firstDate-month" maxlength="2" placeholder="MM" inputmode="numeric" class="date-part"
+            style="color: black;" aria-label="Month">
+          <span class="date-separator">/</span>
+          <input type="text" id="firstDate-year" maxlength="4" placeholder="YYYY" inputmode="numeric"
+            class="date-part date-part-year" style="color: black;" aria-label="Year">
+        </div>
         <div id="firstDate-error" class="error-message" role="alert" aria-live="polite"></div>
       </div>
     </section>
@@ -37,8 +45,16 @@
         <!-- EMI entries will be dynamically added here -->
       </div>
       <div class="add-emi">
-        <input type="date" id="emiDate" aria-label="EMI date (YYYY-MM-DD)" style="color: black;"
-          placeholder="YYYY-MM-DD">
+        <div class="date-input-group">
+          <input type="text" id="emiDate-day" maxlength="2" placeholder="DD" inputmode="numeric" class="date-part"
+            style="color: black;" aria-label="Day">
+          <span class="date-separator">/</span>
+          <input type="text" id="emiDate-month" maxlength="2" placeholder="MM" inputmode="numeric" class="date-part"
+            style="color: black;" aria-label="Month">
+          <span class="date-separator">/</span>
+          <input type="text" id="emiDate-year" maxlength="4" placeholder="YYYY" inputmode="numeric"
+            class="date-part date-part-year" style="color: black;" aria-label="Year">
+        </div>
         <input type="number" id="emiAmount" placeholder="Amount (₹)" inputmode="decimal" min="0" aria-label="EMI amount"
           style="color: black;">
         <button id="addEmiBtn">Add EMI</button>
