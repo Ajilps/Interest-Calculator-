@@ -477,12 +477,8 @@ function generatePDF(schedule, finalBalance, initialAmount, firstDate, emis) {
   const doc = new jsPDF();
 
   // Helper functions
-  const toINR = (n) =>
-    new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 2,
-    }).format(n);
+
+  const toINR = (n) => `Rs. ${n.toLocaleString("en-IN")}`;
 
   const fmt = (d) =>
     new Date(d).toLocaleDateString("en-IN", {
