@@ -24,8 +24,9 @@
         <div id="initialAmount-error" class="error-message" role="alert" aria-live="polite"></div>
       </div>
       <div class="form-group">
-        <label for="firstDate">First Date:</label>
-        <input type="date" id="firstDate" value="2025-07-28" aria-describedby="firstDate-error" style="color: black;">
+        <label for="firstDate">First Date (YYYY-MM-DD):</label>
+        <input type="date" id="firstDate" value="2025-07-28" aria-describedby="firstDate-error" style="color: black;"
+          placeholder="YYYY-MM-DD">
         <div id="firstDate-error" class="error-message" role="alert" aria-live="polite"></div>
       </div>
     </section>
@@ -36,7 +37,8 @@
         <!-- EMI entries will be dynamically added here -->
       </div>
       <div class="add-emi">
-        <input type="date" id="emiDate" aria-label="EMI date" style="color: black;">
+        <input type="date" id="emiDate" aria-label="EMI date (YYYY-MM-DD)" style="color: black;"
+          placeholder="YYYY-MM-DD">
         <input type="number" id="emiAmount" placeholder="Amount (₹)" inputmode="decimal" min="0" aria-label="EMI amount"
           style="color: black;">
         <button id="addEmiBtn">Add EMI</button>

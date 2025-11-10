@@ -25,27 +25,80 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Helper function to validate and format date input
+  function validateDateFormat(dateString) {
+    // Check if it matches YYYY-MM-DD format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(dateString)) {
+      return {
+        valid: false,
+        message: "Please use YYYY-MM-DD format (e.g., 2025-01-15)",
+      };
+    }
+
+    // Check if it's a valid date
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return { valid: false, message: "Please enter a valid date" };
+    }
+
+    // Check if the date components match (handles invalid dates like 2025-02-30)
+    const [year, month, day] = dateString.split("-").map(Number);
+    if (
+      date.getFullYear() !== year ||
+      date.getMonth() + 1 !== month ||
+      date.getDate() !== day
+    ) {
+      return {
+        valid: false,
+        message: "Invalid date (e.g., Feb 30 doesn't exist)",
+      };
+    }
+
+    return { valid: true, date: date };
+  }
+
   function validateFirstDate() {
     const value = firstDateEl.value;
     const errorEl = document.getElementById("firstDate-error");
     if (!value) {
-      errorEl.textContent = "Please select a valid date.";
+      errorEl.textContent = "Please enter or select a date.";
       firstDateEl.setAttribute("aria-invalid", "true");
       return false;
-    } else {
-      errorEl.textContent = "";
-      firstDateEl.setAttribute("aria-invalid", "false");
-      return true;
     }
+
+    const validation = validateDateFormat(value);
+    if (!validation.valid) {
+      errorEl.textContent = validation.message;
+      firstDateEl.setAttribute("aria-invalid", "true");
+      return false;
+    }
+
+    errorEl.textContent = "";
+    firstDateEl.setAttribute("aria-invalid", "false");
+    return true;
   }
 
   function validateEmiInputs() {
     const amount = Number(emiAmountEl.value);
     const date = emiDateEl.value;
-    if (amount <= 0 || !date) {
-      showAlert("Please enter a valid date and amount.");
+
+    if (!date) {
+      showAlert("Please enter or select an EMI date.");
       return false;
     }
+
+    const validation = validateDateFormat(date);
+    if (!validation.valid) {
+      showAlert("EMI Date: " + validation.message);
+      return false;
+    }
+
+    if (amount <= 0 || !emiAmountEl.value) {
+      showAlert("Please enter a valid EMI amount greater than 0.");
+      return false;
+    }
+
     return true;
   }
 
