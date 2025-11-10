@@ -393,7 +393,7 @@ h1 {
 /* Inputs: switch to grid for label-input alignment */
 .input-section {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  /* grid-template-columns: 1fr 2fr; */
   align-items: center;
   gap: 0.75rem 1rem;
   margin-bottom: 1rem;
@@ -650,7 +650,7 @@ button:focus-visible {
   }
 
   .input-section {
-    grid-template-columns: 1fr;
+    /* grid-template-columns: 1fr; */
     gap: 0.5rem;
   }
 
@@ -773,7 +773,7 @@ button:focus-visible {
 /* Input grid over old flex layout */
 .input-section {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  /* grid-template-columns: 1fr 2fr; */
   align-items: center;
   gap: 0.75rem 1rem;
   margin-bottom: 1rem;
