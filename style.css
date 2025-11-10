@@ -96,7 +96,7 @@ h2 {
 
 .input-section {
   display: grid;
-  grid-template-columns: 1fr;
+  /* grid-template-columns: 1fr; */
   gap: var(--space-4);
 }
 
