@@ -46,11 +46,17 @@
     <button id="calculateBtn">Calculate Interest</button>
 
     <section class="output-section card">
-      <h2>Results</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="margin: 0;">Results</h2>
+        <button id="downloadPdfBtn" style="display: none; padding: 0.6rem 1rem; margin: 0; font-size: 0.9rem;">
+          📄 Download PDF
+        </button>
+      </div>
       <div id="output" class="results-grid" aria-live="polite" role="region" aria-label="Calculation results"></div>
     </section>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="script.js"></script>
 </body>
 

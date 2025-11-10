@@ -111,6 +111,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Download PDF button event listener
+  document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+    if (window.calculationData) {
+      const { schedule, finalBalance, initialAmount, firstDate, emis } =
+        window.calculationData;
+      generatePDF(schedule, finalBalance, initialAmount, firstDate, emis);
+    }
+  });
+
   function renderEmiList() {
     emiListEl.innerHTML = "";
     emis
@@ -152,6 +161,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function printSchedule(schedule, finalBalance) {
+    const downloadBtn = document.getElementById("downloadPdfBtn");
+
+    // Store data globally for PDF generation
+    window.calculationData = {
+      schedule,
+      finalBalance,
+      initialAmount: Number(initialAmountEl.value),
+      firstDate: firstDateEl.value,
+      emis: emis,
+    };
+
     const toINR = (n) =>
       new Intl.NumberFormat("en-IN", {
         style: "currency",
@@ -176,10 +196,14 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (schedule.length === 0) {
+      downloadBtn.style.display = "none";
       outputEl.innerHTML =
         '<div class="empty-state">No completed 28-day periods yet. Select an earlier First Date or add EMIs.</div>';
       return;
     }
+
+    // Show download button when there are results
+    downloadBtn.style.display = "block";
 
     let html = "";
 
@@ -325,4 +349,146 @@ class CalculateInterest {
     this.finalBalance = principal;
     return schedule;
   }
+}
+
+function generatePDF(schedule, finalBalance, initialAmount, firstDate, emis) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Helper functions
+  const toINR = (n) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 2,
+    }).format(n);
+
+  const fmt = (d) =>
+    new Date(d).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+  // Calculate totals
+  const totals = schedule.reduce(
+    (acc, p) => {
+      acc.paid += p.totalPaid;
+      acc.interest += p.interest;
+      return acc;
+    },
+    { paid: 0, interest: 0 }
+  );
+
+  // PDF Header
+  doc.setFontSize(20);
+  doc.setTextColor(37, 99, 235);
+  doc.text("Interest Calculator Report", 105, 20, { align: "center" });
+
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Generated on: ${new Date().toLocaleString("en-IN")}`, 105, 28, {
+    align: "center",
+  });
+
+  // Initial Information
+  let yPos = 45;
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Initial Setup", 20, yPos);
+  yPos += 8;
+
+  doc.setFontSize(10);
+  doc.text(`Initial Amount: ${toINR(initialAmount)}`, 25, yPos);
+  yPos += 6;
+  doc.text(`First Date: ${fmt(firstDate)}`, 25, yPos);
+  yPos += 6;
+  doc.text(`Number of EMIs: ${emis.length}`, 25, yPos);
+  yPos += 15;
+
+  // Summary Section
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Summary", 20, yPos);
+  yPos += 8;
+
+  doc.setFontSize(10);
+  doc.setFillColor(240, 240, 240);
+  doc.rect(20, yPos - 5, 170, 25, "F");
+
+  doc.text(`Total Paid: ${toINR(totals.paid)}`, 25, yPos);
+  yPos += 7;
+  doc.text(`Total Interest: ${toINR(totals.interest)}`, 25, yPos);
+  yPos += 7;
+  doc.setFont(undefined, "bold");
+  doc.text(`Final Balance: ${toINR(finalBalance)}`, 25, yPos);
+  doc.setFont(undefined, "normal");
+  yPos += 15;
+
+  // Period Details
+  doc.setFontSize(12);
+  doc.text("Period-wise Breakdown", 20, yPos);
+  yPos += 10;
+
+  // Table header
+  doc.setFillColor(37, 99, 235);
+  doc.setTextColor(255, 255, 255);
+  doc.rect(20, yPos - 5, 170, 8, "F");
+  doc.setFontSize(9);
+  doc.text("Period", 22, yPos);
+  doc.text("Paid", 100, yPos);
+  doc.text("Interest", 130, yPos);
+  doc.text("Balance", 165, yPos);
+  yPos += 8;
+
+  // Table rows
+  doc.setTextColor(0, 0, 0);
+  schedule.forEach((period, index) => {
+    // Check if we need a new page
+    if (yPos > 270) {
+      doc.addPage();
+      yPos = 20;
+
+      // Repeat header on new page
+      doc.setFillColor(37, 99, 235);
+      doc.setTextColor(255, 255, 255);
+      doc.rect(20, yPos - 5, 170, 8, "F");
+      doc.text("Period", 22, yPos);
+      doc.text("Paid", 100, yPos);
+      doc.text("Interest", 130, yPos);
+      doc.text("Balance", 165, yPos);
+      yPos += 8;
+      doc.setTextColor(0, 0, 0);
+    }
+
+    // Alternating row colors
+    if (index % 2 === 0) {
+      doc.setFillColor(248, 248, 248);
+      doc.rect(20, yPos - 5, 170, 7, "F");
+    }
+
+    const periodText = `${fmt(period.startDate)} → ${fmt(period.endDate)}`;
+    doc.setFontSize(7);
+    doc.text(periodText, 22, yPos);
+    doc.setFontSize(9);
+    doc.text(toINR(period.totalPaid), 100, yPos);
+    doc.text(toINR(period.interest), 130, yPos);
+    doc.text(toINR(period.balance), 165, yPos);
+    yPos += 7;
+  });
+
+  // Footer
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text(`Page ${i} of ${pageCount}`, 105, 290, { align: "center" });
+  }
+
+  // Save the PDF
+  const fileName = `Interest_Report_${
+    new Date().toISOString().split("T")[0]
+  }.pdf`;
+  doc.save(fileName);
 }
